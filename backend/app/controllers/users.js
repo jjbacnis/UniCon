@@ -1,0 +1,106 @@
+const UsersModel = require('../models/users');
+
+// Add a new user
+module.exports.processAdd = async function (req, res, next) {
+    try {
+        let newUser = UsersModel(req.body);
+        if (req.body.password) newUser.password = req.body.password;
+        let result = await newUser.save();
+        console.log(result);
+
+        res.json(
+            {
+                success: true,
+                message: "User Added Successfully",
+                data: result
+            }
+        );
+    } catch (err) {
+        next(err);
+    }
+};
+
+// List all users
+module.exports.usersList = async function (req, res, next) { 
+    try {
+        let list = await UsersModel.find({});
+
+        res.json(
+            {
+                success: true,
+                message: "Users List Retrieved Successfully",
+                data: list
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+};
+
+// Get the authenticated user's information
+module.exports.me = async function (req, res, next) { 
+    try {
+        const user = await UsersModel.findById(req.auth.id);
+        if (!user || user.status === 'deleted') {
+            const err = new Error('User not found');
+            err.status = 404;
+            throw err;
+        }
+        res.json({ success: true, data: user });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Update the authenticated user's information
+module.exports.updateMe = async function (req, res, next) {
+    try {
+        const allowed = {};
+        ['firstName', 'lastName', 'email'].forEach((field) => {
+            if (req.body[field] !== undefined) allowed[field] = req.body[field];
+        });
+        if (req.body.password) {
+            const user = await UsersModel.findById(req.auth.id);
+            if (!user) {
+                const err = new Error('User not found');
+                err.status = 404;
+                throw err;
+            }
+            user.password = req.body.password;
+            await user.save();
+        }
+        const user = await UsersModel.findByIdAndUpdate(
+            req.auth.id,
+            { $set: allowed },
+            { new: true, runValidators: true }
+        );
+        if (!user) {
+            const err = new Error('User not found');
+            err.status = 404;
+            throw err;
+        }
+        res.json({ success: true, message: 'User updated successfully', data: user });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Soft delete the authenticated user's account
+module.exports.softDeleteMe = async function (req, res, next) {
+    try {
+        const user = await UsersModel.findByIdAndUpdate(
+            req.auth.id,
+            { $set: { status: 'deleted', updated: new Date() } },
+            { new: true }
+        );
+        if (!user) {
+            const err = new Error('User not found');
+            err.status = 404;
+            throw err;
+        }
+        res.json({ success: true, message: 'User deleted successfully', data: user });
+    } catch (err) {
+        next(err);
+    }
+};
