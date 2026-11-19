@@ -1,6 +1,7 @@
 const express = require('express');
 const auth = require('../controllers/auth');
 const users = require('../controllers/users');
+const eventController = require('../controllers/events');
 
 const router = express.Router();
 
@@ -17,5 +18,8 @@ router.patch('/users/me', auth.validateToken, users.updateMe);
 router.put('/users/me', auth.validateToken, users.updateMe);
 router.delete('/users/me', auth.validateToken, users.softDeleteMe);
 
+// Routes for event management
+router.get('/events', eventController.getEvents);
+router.post('/events', eventController.createEvent);
 
 module.exports = router;
