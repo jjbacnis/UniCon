@@ -21,7 +21,25 @@ router.delete('/users/me', auth.validateToken, users.softDeleteMe);
 // Routes for event management
 router.get('/events', eventController.getEvents);
 router.get('/events/:id', eventController.getEventById);
-router.post('/events', eventController.createEvent);
-router.patch('/events/:id', eventController.updateEvent);
-router.delete('/events/:id', eventController.deleteEvent);
+
+router.post(
+    '/events',
+    auth.validateToken,
+    eventController.createEvent
+);
+
+router.patch(
+    '/events/:id',
+    auth.validateToken,
+    eventController.updateEvent
+);
+
+router.delete(
+    '/events/:id',
+    auth.validateToken,
+    auth.requireAdmin,
+    eventController.deleteEvent
+);
+
+
 module.exports = router;

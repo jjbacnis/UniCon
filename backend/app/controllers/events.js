@@ -38,7 +38,10 @@ module.exports.getEventById = async (req, res, next) => {
 // Create an event
 module.exports.createEvent = async (req, res, next) => {
     try {
-        const event = await Event.create(req.body);
+        const event = await Event.create({
+            ...req.body,
+            createdBy: req.auth.id
+        });
 
         res.status(201).json({
             success: true,
@@ -52,11 +55,7 @@ module.exports.createEvent = async (req, res, next) => {
 // Update an event
 module.exports.updateEvent = async (req, res, next) => {
     try {
-        const event = await Event.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
+        const event = await Event.findById(req.params.id);
 
         if (!event) {
             return res.status(404).json({
@@ -64,6 +63,20 @@ module.exports.updateEvent = async (req, res, next) => {
                 message: 'Event not found'
             });
         }
+
+        if (
+            event.createdBy &&
+            event.createdBy.toString() !== req.auth.id &&
+            !req.auth.admin
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized'
+            });
+        }
+
+        Object.assign(event, req.body);
+        await event.save();
 
         res.json({
             success: true,
