@@ -19,7 +19,8 @@ module.exports.signin = async function (req, res, next) {
             throw err;
         }
 
-        const user = await User.findOne({ email: email.toLowerCase(), status: { $ne: 'deleted' } })
+        // If the user is active, find the user by email and check the password. If the user is not active, return an error.
+        const user = await User.findOne({ email: email.toLowerCase(), status: { $ne: 'active' } }) 
             .select('+hashed_password');
         if (!user || !user.authenticate(password)) {
             const err = new Error('Email and/or password do not match');
