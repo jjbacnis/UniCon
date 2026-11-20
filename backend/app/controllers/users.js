@@ -1,27 +1,7 @@
 const UsersModel = require('../models/users');
 
-// Add a new user
-module.exports.processAdd = async function (req, res, next) {
-    try {
-        let newUser = UsersModel(req.body);
-        if (req.body.password) newUser.password = req.body.password;
-        let result = await newUser.save();
-        console.log(result);
-
-        res.json(
-            {
-                success: true,
-                message: "User Added Successfully",
-                data: result
-            }
-        );
-    } catch (err) {
-        next(err);
-    }
-};
-
 // List all users
-module.exports.usersList = async function (req, res, next) { 
+module.exports.usersList = async function (req, res, next) {
     try {
         let list = await UsersModel.find({});
 
