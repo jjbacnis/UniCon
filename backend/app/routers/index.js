@@ -22,7 +22,7 @@ router.use('/events', auth.validateToken);
 router.get('/events', eventController.getEvents);
 router.get('/events/:id', eventController.getEventById);
 router.post('/events', eventController.createEvent);
-router.patch('/events/:id', eventController.updateEvent);
-router.delete('/events/:id', eventController.deleteEvent);
+router.patch('/events/:id', requireAdmin, eventController.updateEvent);
+router.delete('/events/:id', requireAdmin, eventController.deleteEvent);
 
 module.exports = router;
