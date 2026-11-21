@@ -1,3 +1,13 @@
+/**
+ * @file index.js (routers)
+ * Defines every API endpoint (mounted under /api) and which middleware
+ * protects it.
+ *  - Auth: register and login (public).
+ *  - Users: all routes need a token; listing all users also needs admin.
+ *  - Events: listing and viewing are public; create and update need a
+ *    token; delete needs a token and admin.
+ */
+
 const express = require('express');
 const auth = require('../controllers/auth');
 const users = require('../controllers/users');

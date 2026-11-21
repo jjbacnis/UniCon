@@ -1,3 +1,11 @@
+/**
+ * @file events.js (controller)
+ * Handles event CRUD: list all events, get one by ID, create, update and
+ * delete. New events are stamped with the logged-in user as createdBy.
+ * Only the creator or an admin can update an event. Errors are passed to
+ * the central error handler with next(err).
+ */
+
 const Event = require('../models/events');
 
 // Get all events

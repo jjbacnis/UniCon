@@ -1,3 +1,10 @@
+/**
+ * @file db.js
+ * Exports a function that connects the app to MongoDB Atlas using the
+ * ATLASDB connection string from the .env file. server.js calls it before
+ * the server starts, and the app stops if the connection fails.
+ */
+
 let mongoose = require('mongoose');
 
 require('dotenv').config();

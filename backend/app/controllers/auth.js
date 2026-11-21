@@ -1,3 +1,11 @@
+/**
+ * @file auth.js (controller)
+ * Handles authentication. Registers new users and signs in existing
+ * users, returning a JWT token that expires in 20 minutes. Also exports
+ * two middleware functions: validateToken (checks the Bearer token and
+ * stores its data on req.auth) and requireAdmin (blocks non-admins).
+ */
+
 const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();

@@ -1,3 +1,10 @@
+/**
+ * @file server.js
+ * Entry point of the UniCon backend. Connects to MongoDB (config/db.js),
+ * then creates the HTTP server from the Express app (config/express.js)
+ * and listens on PORT (default 3000). Start it with `npm start`.
+ */
+
 let configDB = require('./config/db');
 let app = require('./config/express');
 var http = require('http');

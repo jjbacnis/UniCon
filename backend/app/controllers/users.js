@@ -1,3 +1,11 @@
+/**
+ * @file users.js (controller)
+ * Handles user management. Lists all users (admin only, enforced in the
+ * router), and lets the logged-in user view, update or soft delete their
+ * own account. Soft delete sets status to 'deleted' instead of removing
+ * the record.
+ */
+
 const UsersModel = require('../models/users');
 
 // List all users

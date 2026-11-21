@@ -1,3 +1,10 @@
+/**
+ * @file events.js (model)
+ * Mongoose schema for events: title, description, location, date, the
+ * user who created it (createdBy) and a status (published, cancelled or
+ * deleted). Timestamps are added automatically.
+ */
+
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
