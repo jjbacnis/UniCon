@@ -1,3 +1,11 @@
+/**
+ * @file users.js (model)
+ * Mongoose schema for users: name, unique email, hashed password (never
+ * returned in responses), QR token, status (active, suspended or deleted)
+ * and an admin flag. Passwords are hashed with bcrypt, and the schema
+ * provides an authenticate() method used at sign in.
+ */
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');

@@ -1,3 +1,11 @@
+/**
+ * @file express.js
+ * Builds and configures the Express app: CORS, request logging and
+ * JSON body parsing. Mounts all API routes under /api, forwards unknown
+ * URLs to a 404, and defines the central error handler that turns errors
+ * into JSON responses with the right status code.
+ */
+
 const express = require('express');
 var createError = require('http-errors');
 var logger = require('morgan');
