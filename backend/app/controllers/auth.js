@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // Function to retrieve the JWT secret key from environment variables
-const privateKey = () => { 
+const privateKey = () => {
     const secret = process.env.JWT_SECRET || process.env.SECRETKEY;
     if (!secret) throw new Error('JWT_SECRET or SECRETKEY environment variable is required');
     return secret;
 };
 
 // Sign in a user and return a JWT token
-module.exports.signin = async function (req, res, next) { 
+module.exports.signin = async function (req, res, next) {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -19,7 +19,8 @@ module.exports.signin = async function (req, res, next) {
             throw err;
         }
 
-        const user = await User.findOne({ email: email.toLowerCase(), status: { $ne: 'deleted' } })
+        // Only active users may sign in.
+        const user = await User.findOne({ email: email.toLowerCase(), status: 'active' })
             .select('+hashed_password');
         if (!user || !user.authenticate(password)) {
             const err = new Error('Email and/or password do not match');
@@ -30,13 +31,14 @@ module.exports.signin = async function (req, res, next) {
         const payload = { id: user._id.toString(), email: user.email, admin: user.admin };
         const token = jwt.sign(payload, privateKey(), { algorithm: 'HS256', expiresIn: '20m' });
         res.json({ success: true, message: 'User authenticated successfully', token, user });
+        console.log(`User: ${user.email} signed in successfully`);
     } catch (err) {
         next(err);
     }
 };
 
 // Register a new user and return a JWT token
-module.exports.register = async function (req, res, next) { // Register a new user and return a JWT token
+module.exports.register = async function (req, res, next) {
     try {
         const { firstName, lastName, email, password } = req.body;
         if (!email || !password) {
@@ -50,14 +52,18 @@ module.exports.register = async function (req, res, next) { // Register a new us
         const payload = { id: user._id.toString(), email: user.email, admin: user.admin };
         const token = jwt.sign(payload, privateKey(), { algorithm: 'HS256', expiresIn: '20m' });
         res.status(201).json({ success: true, message: 'User registered successfully', token, user });
+
+        console.log(`User: ${user.email} registered successfully`);
+
     } catch (err) {
         if (err.code === 11000) err.status = 409;
+        console.log(err);
         next(err);
     }
 };
 
 // Middleware to validate JWT token and attach user info to request
-module.exports.validateToken = function (req, res, next) { // Middleware to validate JWT token and attach user info to request
+module.exports.validateToken = function (req, res, next) {
     const authorization = req.headers.authorization;
     if (!authorization || !authorization.startsWith('Bearer ')) {
         const err = new Error('Authentication required');
@@ -75,7 +81,7 @@ module.exports.validateToken = function (req, res, next) { // Middleware to vali
 };
 
 // Middleware to check if the authenticated user has admin privileges
-module.exports.requireAdmin = function (req, res, next) { // Middleware to check if the authenticated user has admin privileges
+module.exports.requireAdmin = function (req, res, next) {
     if (!req.auth || !req.auth.admin) {
         const err = new Error('Administrator access required');
         err.status = 403;

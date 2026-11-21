@@ -18,6 +18,7 @@ module.exports.getEvents = async (req, res, next) => {
 module.exports.getEventById = async (req, res, next) => {
     try {
         const event = await Event.findById(req.params.id);
+        console.log(`Event: ${event.title} found`);
 
         if (!event) {
             return res.status(404).json({

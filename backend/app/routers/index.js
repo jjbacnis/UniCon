@@ -8,11 +8,10 @@ const router = express.Router();
 // Routes for authentication and user management
 router.get('/health', (req, res) => res.json({ success: true, status: 'ok' }));
 router.post('/auth/register', auth.register);
-router.post('/auth/signup', auth.register);
 router.post('/auth/login', auth.signin);
-router.post('/auth/signin', auth.signin);
 
 // Routes for user management
+router.get('/users', auth.validateToken, auth.requireAdmin, users.usersList);
 router.get('/users/me', auth.validateToken, users.me);
 router.patch('/users/me', auth.validateToken, users.updateMe);
 router.put('/users/me', auth.validateToken, users.updateMe);
@@ -40,6 +39,4 @@ router.delete(
     auth.requireAdmin,
     eventController.deleteEvent
 );
-
-
 module.exports = router;
